@@ -36,7 +36,7 @@ public final class QuoridorBoard extends Board {
 
     public QuoridorBoard(Player first, Player second, Map<Player, String> colorTokens) {
         super(SIZE, SIZE);
-        this.order = List.of(first, second);
+        this.order = Collections.unmodifiableList(Arrays.asList(first, second));
         this.colorTokens = new HashMap<>(colorTokens);
         for (int r = 0; r < SIZE; r++) {
             for (int c = 0; c < SIZE; c++) {
@@ -354,10 +354,16 @@ public final class QuoridorBoard extends Board {
         }
 
         Direction[] perpendiculars() {
-            return switch (this) {
-                case NORTH, SOUTH -> new Direction[]{WEST, EAST};
-                case EAST, WEST -> new Direction[]{NORTH, SOUTH};
-            };
+            switch (this) {
+                case NORTH:
+                case SOUTH:
+                    return new Direction[]{WEST, EAST};
+                case EAST:
+                case WEST:
+                    return new Direction[]{NORTH, SOUTH};
+                default:
+                    throw new IllegalStateException("Unexpected direction: " + this);
+            }
         }
     }
 }

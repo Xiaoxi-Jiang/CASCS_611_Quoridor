@@ -52,10 +52,9 @@ public final class QuoridorGame extends Game {
         Player blue = new Player(blueName);
         registerPlayers(Arrays.asList(red, blue));
 
-        Map<Player, String> pawnColors = Map.of(
-                red, RED,
-                blue, BLUE
-        );
+        Map<Player, String> pawnColors = new HashMap<>();
+        pawnColors.put(red, RED);
+        pawnColors.put(blue, BLUE);
         QuoridorBoard board = new QuoridorBoard(red, blue, pawnColors);
         registerBoard(board);
 
@@ -194,10 +193,20 @@ public final class QuoridorGame extends Game {
                 }
                 int dr = 0, dc = 0;
                 switch (cmd) {
-                    case "w" -> dr = -1;
-                    case "s" -> dr = 1;
-                    case "a" -> dc = -1;
-                    case "d" -> dc = 1;
+                    case "w":
+                        dr = -1;
+                        break;
+                    case "s":
+                        dr = 1;
+                        break;
+                    case "a":
+                        dc = -1;
+                        break;
+                    case "d":
+                        dc = 1;
+                        break;
+                    default:
+                        break;
                 }
                 pendingWall.set(pendingWall.placement().shift(dr, dc, QuoridorBoard.WALL_RANGE));
                 System.out.println("Moved wall: " + pendingWall.placement());

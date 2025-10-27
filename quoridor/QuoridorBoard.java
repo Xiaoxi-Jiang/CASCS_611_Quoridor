@@ -175,10 +175,20 @@ public final class QuoridorBoard extends Board {
         int row = placement.row();
         int col = placement.col();
         if (placement.orientation() == WallOrientation.HORIZONTAL) {
-            if (horizontalWalls[row][col] != null) return true;
-            if (verticalWalls[row][col] != null) return true; // prevent crossing
-        } else {
+            // Same-orientation overlap: any of the two horizontal segments already blocked
+            if (southBlocked[row][col] || southBlocked[row][col + 1]
+                    || northBlocked[row + 1][col] || northBlocked[row + 1][col + 1]) {
+                return true;
+            }
+            // Crossing at center with an existing vertical wall
             if (verticalWalls[row][col] != null) return true;
+        } else { // VERTICAL
+            // Same-orientation overlap: any of the two vertical segments already blocked
+            if (eastBlocked[row][col] || eastBlocked[row + 1][col]
+                    || westBlocked[row][col + 1] || westBlocked[row + 1][col + 1]) {
+                return true;
+            }
+            // Crossing at center with an existing horizontal wall
             if (horizontalWalls[row][col] != null) return true;
         }
         return false;

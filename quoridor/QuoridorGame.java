@@ -35,17 +35,17 @@ public final class QuoridorGame extends Game {
 
     @Override
     public void start() {
-        System.out.println("\n=== Quoridor ===");
-        System.out.println("Goal: be the first to reach the opposite edge.");
-        System.out.println("Commands: type 'move' to relocate your pawn, or 'place' to position a wall.");
-        System.out.println("Moves require selecting a destination (row col) followed by 'enter'. For walls, use WASD to shift, 'turn' to rotate, 'enter' to confirm, 'change' to re-choose.\n");
+        println("\n=== Quoridor ===");
+        println("Goal: be the first to reach the opposite edge.");
+        println("Commands: type 'move' to relocate your pawn, or 'place' to position a wall.");
+        println("Moves require selecting a destination (row col) followed by 'enter'. For walls, use WASD to shift, 'turn' to rotate, 'enter' to confirm, 'change' to re-choose.\n");
 
         String redName = io.readNonEmpty("Red player name: ");
         String blueName;
         while (true) {
             blueName = io.readNonEmpty("Blue player name: ");
             if (!blueName.equalsIgnoreCase(redName)) break;
-            System.out.println(WARN + "Names must be different. Please retry." + RESET);
+            println(WARN + "Names must be different. Please retry." + RESET);
         }
 
         Player red = new Player(redName);
@@ -63,13 +63,10 @@ public final class QuoridorGame extends Game {
         while (true) {
             Player current = turnOrder.get(currentIdx);
             Player opponent = board.opponent(current);
-            if (board.hasPlayerWon(opponent)) {
-                announceWinner(board, opponent, pawnColors);
-                return;
-            }
+            if (board.hasPlayerWon(opponent)) { announceWinner(board, opponent, pawnColors); return; }
             boolean finishedTurn = handleTurn(board, current, pawnColors);
             if (!finishedTurn) {
-                System.out.println("Returning to game menu.");
+                println("Returning to game menu.");
                 return;
             }
             if (board.hasPlayerWon(current)) {
@@ -87,22 +84,22 @@ public final class QuoridorGame extends Game {
         List<Position> moveOptions = Collections.emptyList();
 
         while (true) {
-            System.out.println(board.render(pendingWall.placement(), pendingMove.target()));
-            System.out.println(statusLine(board, current, pawnColors.get(current)));
+            println(board.render(pendingWall.placement(), pendingMove.target()));
+            println(statusLine(board, current, pawnColors.get(current)));
             if (mode == ActionMode.MOVE) {
-                System.out.println(INFO + "Reachable squares (row col, 1-9): " + formatPositions(moveOptions) + RESET);
+                println(INFO + "Reachable squares (row col, 1-9): " + formatPositions(moveOptions) + RESET);
                 if (!pendingMove.ready()) {
-                    System.out.println("Enter coordinates (row col) to choose a target, or type 'change' to pick another action.");
+                    println("Enter coordinates (row col) to choose a target, or type 'change' to pick another action.");
                 } else {
-                    System.out.println("Type 'enter' to confirm, or re-enter coordinates to modify the choice.");
+                    println("Type 'enter' to confirm, or re-enter coordinates to modify the choice.");
                 }
             } else if (mode == ActionMode.PLACE) {
-                System.out.println("Use WASD to shift, 'turn' to rotate, 'enter' to confirm, 'change' to go back.");
+                println("Use WASD to shift, 'turn' to rotate, 'enter' to confirm, 'change' to go back.");
                 if (pendingWall.ready()) {
-                    System.out.println("Current wall preview: " + pendingWall.placement());
+                    println("Current wall preview: " + pendingWall.placement());
                 }
             } else {
-                System.out.println("Type 'move' to relocate or 'place' to drop a wall (remaining " + board.getWallsRemaining(current) + ").");
+                println("Type 'move' to relocate or 'place' to drop a wall (remaining " + board.getWallsRemaining(current) + ").");
             }
 
             String raw = io.readNonEmpty("Command: ").trim();
@@ -121,20 +118,13 @@ public final class QuoridorGame extends Game {
 
             if (cmd.equals("enter")) {
                 if (mode == ActionMode.MOVE && pendingMove.ready()) {
-                    if (board.applyMove(current, pendingMove.target())) {
-                        System.out.println("Moved to " + humanReadable(pendingMove.target()));
-                        return true;
-                    }
-                    System.out.println(WARN + "Move failed: illegal destination." + RESET);
+                    if (board.applyMove(current, pendingMove.target())) { println("Moved to " + humanReadable(pendingMove.target())); return true; }
+                    println(WARN + "Move failed: illegal destination." + RESET);
                 } else if (mode == ActionMode.PLACE && pendingWall.ready()) {
-                    if (board.applyWall(current, pendingWall.placement())) {
-                        System.out.println("Wall placed: " + pendingWall.placement());
-                        return true;
-                    } else {
-                        System.out.println(WARN + "Cannot place wall: conflict or blocked paths." + RESET);
-                    }
+                    if (board.applyWall(current, pendingWall.placement())) { println("Wall placed: " + pendingWall.placement()); return true; }
+                    else { println(WARN + "Cannot place wall: conflict or blocked paths." + RESET); }
                 } else {
-                    System.out.println(WARN + "Nothing to confirm yet." + RESET);
+                    println(WARN + "Nothing to confirm yet." + RESET);
                 }
                 continue;
             }
@@ -142,36 +132,27 @@ public final class QuoridorGame extends Game {
             if (mode == ActionMode.NONE) {
                 if (cmd.equals("move")) {
                     moveOptions = board.legalMoves(current);
-                    if (moveOptions.isEmpty()) {
-                        System.out.println(WARN + "No legal moves available." + RESET);
-                        continue;
-                    }
+                    if (moveOptions.isEmpty()) { println(WARN + "No legal moves available." + RESET); continue; }
                     mode = ActionMode.MOVE;
                     pendingMove.clear();
                 } else if (cmd.equals("place")) {
                     if (board.getWallsRemaining(current) <= 0) {
-                    System.out.println(WARN + "No walls remaining; cannot place." + RESET);
+                    println(WARN + "No walls remaining; cannot place." + RESET);
                         continue;
                     }
                     mode = ActionMode.PLACE;
                     pendingWall.set(defaultWallPlacement());
-                    System.out.println("Wall preview placed at default location. Adjust with WASD/turn.");
+                    println("Wall preview placed at default location. Adjust with WASD/turn.");
                 } else {
-                    System.out.println(WARN + "Unknown command. Type 'move' or 'place'." + RESET);
+                    println(WARN + "Unknown command. Type 'move' or 'place'." + RESET);
                 }
                 continue;
             }
 
             if (mode == ActionMode.MOVE) {
                 Position pos = parsePosition(raw);
-                if (pos == null) {
-                    System.out.println(WARN + "Please enter coordinates like 'row col' (1-9)." + RESET);
-                    continue;
-                }
-                if (!moveOptions.contains(pos)) {
-                    System.out.println(WARN + "Destination not reachable. Try again." + RESET);
-                    continue;
-                }
+                if (pos == null) { println(WARN + "Please enter coordinates like 'row col' (1-9)." + RESET); continue; }
+                if (!moveOptions.contains(pos)) { println(WARN + "Destination not reachable. Try again." + RESET); continue; }
                 pendingMove.set(pos);
                 continue;
             }
@@ -179,16 +160,16 @@ public final class QuoridorGame extends Game {
             // PLACE mode adjustments
             if (cmd.equals("turn") && mode == ActionMode.PLACE) {
                 if (!pendingWall.ready()) {
-                    System.out.println(WARN + "No wall preview to rotate." + RESET);
+                    println(WARN + "No wall preview to rotate." + RESET);
                     continue;
                 }
                 pendingWall.set(pendingWall.placement().rotate(QuoridorBoard.WALL_RANGE));
-                System.out.println("Rotated wall: " + pendingWall.placement());
+                println("Rotated wall: " + pendingWall.placement());
                 continue;
             }
             if (mode == ActionMode.PLACE && (cmd.equals("w") || cmd.equals("a") || cmd.equals("s") || cmd.equals("d"))) {
                 if (!pendingWall.ready()) {
-                    System.out.println(WARN + "No wall preview to move." + RESET);
+                    println(WARN + "No wall preview to move." + RESET);
                     continue;
                 }
                 int dr = 0, dc = 0;
@@ -209,11 +190,11 @@ public final class QuoridorGame extends Game {
                         break;
                 }
                 pendingWall.set(pendingWall.placement().shift(dr, dc, QuoridorBoard.WALL_RANGE));
-                System.out.println("Moved wall: " + pendingWall.placement());
+                println("Moved wall: " + pendingWall.placement());
                 continue;
             }
 
-            System.out.println(WARN + "Unknown command. Valid inputs: wasd/turn/enter/change." + RESET);
+            println(WARN + "Unknown command. Valid inputs: wasd/turn/enter/change." + RESET);
         }
     }
 
@@ -225,8 +206,8 @@ public final class QuoridorGame extends Game {
     }
 
     private void announceWinner(QuoridorBoard board, Player winner, Map<Player, String> colors) {
-        System.out.println(board.render(null, null));
-        System.out.println(colors.get(winner) + "Congrats " + winner.getName() + "! You win." + RESET);
+        println(board.render(null, null));
+        println(colors.get(winner) + "Congrats " + winner.getName() + "! You win." + RESET);
     }
 
     private String formatPositions(List<Position> positions) {

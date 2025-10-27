@@ -16,12 +16,12 @@ public final class SlidingPuzzle extends Game {
 
     @Override
     public void start() {
-        System.out.println("\n=== Sliding Puzzle ===");
-        System.out.println("How to play:");
-        System.out.println(" - Choose board size (rows x cols).");
-        System.out.println(" - Each turn, type the TILE NUMBER you want to slide into the empty.");
-        System.out.println("   (Only tiles directly adjacent to the empty can move.)");
-        System.out.println(" - Type 'R' to reshuffle, 'Q' to quit.\n");
+        println("\n=== Sliding Puzzle ===");
+        println("How to play:");
+        println(" - Choose board size (rows x cols).");
+        println(" - Each turn, type the TILE NUMBER you want to slide into the empty.");
+        println("   (Only tiles directly adjacent to the empty can move.)");
+        println(" - Type 'R' to reshuffle, 'Q' to quit.\n");
 
         InputValidator v = this.io;
         int rows = v.readIntInRange("Rows (2..10): ", 2, 10);
@@ -32,11 +32,11 @@ public final class SlidingPuzzle extends Game {
 
         int moves = 0;
         while (true) {
-            System.out.println(board.render());
+            println(board.render());
             if (board.isSolved()) {
                 // Minimal, non-“AI-y” finish text
-                System.out.println("congratulations");
-                System.out.println("moves: " + moves + "\n");
+                println("congratulations");
+                println("moves: " + moves + "\n");
                 return;
             }
 
@@ -47,17 +47,11 @@ public final class SlidingPuzzle extends Game {
 
             Integer val = null;
             try { val = Integer.parseInt(cmd.trim()); } catch (NumberFormatException ignored) {}
-            if (val == null) {
-                System.out.println("Please enter a valid number, or 'R'/'Q'.");
-                continue;
-            }
+            if (val == null) { println("Please enter a valid number, or 'R'/'Q'."); continue; }
 
             boolean ok = board.moveNumber(val);
-            if (!ok) {
-                System.out.println("Illegal move. That tile must be adjacent to the empty.");
-            } else {
-                moves++;
-            }
+            if (!ok) { println("Illegal move. That tile must be adjacent to the empty."); }
+            else { moves++; }
         }
     }
 }

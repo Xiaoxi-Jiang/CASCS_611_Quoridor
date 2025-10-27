@@ -16,13 +16,13 @@ public final class DotsAndBoxes extends Game {
 
     @Override
     public void start() {
-        System.out.println("\n=== Dots & Boxes ===");
-        System.out.println("How to play:");
-        System.out.println(" - Choose board size (R x C boxes).");
-        System.out.println(" - On your turn, type: H r c  (horizontal edge at row r, col c)");
-        System.out.println("   or:            V r c  (vertical edge at row r, col c)");
-        System.out.println(" - Coordinates are zero-based. If you complete a box, you move again.");
-        System.out.println(" - Game ends when all boxes are claimed. Highest score wins.\n");
+        println("\n=== Dots & Boxes ===");
+        println("How to play:");
+        println(" - Choose board size (R x C boxes).");
+        println(" - On your turn, type: H r c  (horizontal edge at row r, col c)");
+        println("   or:            V r c  (vertical edge at row r, col c)");
+        println(" - Coordinates are zero-based. If you complete a box, you move again.");
+        println(" - Game ends when all boxes are claimed. Highest score wins.\n");
 
         // --- Player customization ---
         String p1Name = io.readNonEmpty("Player 1 name: ");
@@ -30,7 +30,7 @@ public final class DotsAndBoxes extends Game {
         while (true) {
             p2Name = io.readNonEmpty("Player 2 name: ");
             if (!p2Name.equalsIgnoreCase(p1Name)) break;
-            System.out.println("Player names must be different. Please choose another name.");
+            println("Player names must be different. Please choose another name.");
         }
 
         Player player1 = new Player(p1Name);
@@ -50,10 +50,10 @@ public final class DotsAndBoxes extends Game {
                 rows = io.readIntInRange("Rows (1..6): ", 1, 6);
                 cols = io.readIntInRange("Cols (1..6): ", 1, 6);
 
-                System.out.println("\nValid coordinate ranges for this board:");
-                System.out.println(" - Horizontal edges: H r c  with  r in [0.." + rows + "], c in [0.." + (cols - 1) + "]");
-                System.out.println(" - Vertical edges:   V r c  with  r in [0.." + (rows - 1) + "], c in [0.." + cols + "]");
-                System.out.println("Example: H 0 0 draws the top-most edge of the top-left box.\n");
+                println("\nValid coordinate ranges for this board:");
+                println(" - Horizontal edges: H r c  with  r in [0.." + rows + "], c in [0.." + (cols - 1) + "]");
+                println(" - Vertical edges:   V r c  with  r in [0.." + (rows - 1) + "], c in [0.." + cols + "]");
+                println("Example: H 0 0 draws the top-most edge of the top-left box.\n");
 
                 haveBoard = true;
             }
@@ -65,23 +65,23 @@ public final class DotsAndBoxes extends Game {
 
             // ---- One round ----
             while (true) {
-                System.out.println(b.render());
-                System.out.println("Score " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2] + "   Turn: " + seats[player].getName());
+                println(b.render());
+                println("Score " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2] + "   Turn: " + seats[player].getName());
 
                 String line = io.readNonEmpty("Move (e.g., H 0 1, V 2 3) or Q to quit round: ");
                 if (line.equalsIgnoreCase("q")) {
                     // Print summary and return to main menu (exit this game)
-                    System.out.println("\n=== Round aborted ===");
-                    System.out.println("Current score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
-                    System.out.println("Session results so far: " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties + "\n");
+                    println("\n=== Round aborted ===");
+                    println("Current score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
+                    println("Session results so far: " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties + "\n");
                     return;
                 }
 
                 DotsMove m = RulesDots.parse(line);
-                if (m == null) { System.out.println("Invalid format. Example: H 0 1"); continue; }
+                if (m == null) { println("Invalid format. Example: H 0 1"); continue; }
 
                 int closed = b.apply(m, seats[player], player);
-                if (closed < 0) { System.out.println("Illegal move (out of bounds or already drawn). Try again."); continue; }
+                if (closed < 0) { println("Illegal move (out of bounds or already drawn). Try again."); continue; }
 
                 pScore[player] += closed;
                 // Early winner detection: if the lead exceeds remaining boxes, we can declare the winner now.
@@ -91,27 +91,27 @@ int remainingBoxes = totalBoxes - claimedBoxes;
 int diff = Math.abs(pScore[1] - pScore[2]);
 
 if (diff > remainingBoxes) {
-    System.out.println(b.render());
+    println(b.render());
     // Decide winner immediately
     if (pScore[1] > pScore[2]) {
-        System.out.println("congratulations " + seats[1].getName());
+        println("congratulations " + seats[1].getName());
     } else {
-        System.out.println("congratulations " + seats[2].getName());
+        println("congratulations " + seats[2].getName());
     }
-    System.out.println("Final score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
+    println("Final score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
 
     // Update session results
     if (pScore[1] > pScore[2]) p1Wins++;
     else p2Wins++;
 
-    System.out.println("Session results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
+    println("Session results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
 
     // End-of-round prompt (same as the full-board branch)
-    System.out.println("\nWhat next?");
-    System.out.println("1) Play again (same settings)");
-    System.out.println("2) Change board size");
-    System.out.println("3) Back to game menu");
-    System.out.println("0) Quit");
+    println("\nWhat next?");
+    println("1) Play again (same settings)");
+    println("2) Change board size");
+    println("3) Back to game menu");
+    println("0) Quit");
     int choice = io.readIntInRange("> ", 0, 3);
 
     if (choice == 1) {
@@ -121,36 +121,36 @@ if (diff > remainingBoxes) {
     } else if (choice == 3) {
         return; // back to Main menu
     } else {
-        System.out.println("\nSummary results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
-        System.out.println("goodbye");
+        println("\nSummary results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
+        println("goodbye");
         System.exit(0);
     }
     break; // break the round loop so the outer loop can continue per choice
 }
 
                 if (b.isFull()) {
-                    System.out.println(b.render());
-                    if (pScore[1] > pScore[2]) { System.out.println("congratulations " + seats[1].getName()); p1Wins++; }
-                    else if (pScore[2] > pScore[1]) { System.out.println("congratulations " + seats[2].getName()); p2Wins++; }
-                    else { System.out.println("tie"); ties++; }
+                    println(b.render());
+                    if (pScore[1] > pScore[2]) { println("congratulations " + seats[1].getName()); p1Wins++; }
+                    else if (pScore[2] > pScore[1]) { println("congratulations " + seats[2].getName()); p2Wins++; }
+                    else { println("tie"); ties++; }
 
-                    System.out.println("Final score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
-                    System.out.println("Session results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
+                    println("Final score — " + seats[1].getName() + "=" + pScore[1] + "  " + seats[2].getName() + "=" + pScore[2]);
+                    println("Session results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
 
                     // End-of-round prompt
-                    System.out.println("\nWhat next?");
-                    System.out.println("1) Play again (same settings)");
-                    System.out.println("2) Change board size");
-                    System.out.println("3) Back to game menu");
-                    System.out.println("0) Quit");
+                    println("\nWhat next?");
+                    println("1) Play again (same settings)");
+                    println("2) Change board size");
+                    println("3) Back to game menu");
+                    println("0) Quit");
                     int choice = io.readIntInRange("> ", 0, 3);
 
                     if (choice == 1) { /* same settings */ }
                     else if (choice == 2) { haveBoard = false; }
                     else if (choice == 3) { return; } // back to Main menu
                     else { // 0
-                        System.out.println("\nSummary results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
-                        System.out.println("goodbye");
+                        println("\nSummary results — " + seats[1].getName() + " wins=" + p1Wins + ", " + seats[2].getName() + " wins=" + p2Wins + ", ties=" + ties);
+                        println("goodbye");
                         System.exit(0);
                     }
                     break; // break round loop; outer loop continues as per haveBoard

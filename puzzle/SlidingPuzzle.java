@@ -34,7 +34,6 @@ public final class SlidingPuzzle extends Game {
         while (true) {
             println(board.render());
             if (board.isSolved()) {
-                // Minimal, non-“AI-y” finish text
                 println("congratulations");
                 println("moves: " + moves + "\n");
                 return;

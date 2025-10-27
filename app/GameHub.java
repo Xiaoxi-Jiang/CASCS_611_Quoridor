@@ -3,7 +3,6 @@ package app;
 import dots.DotsAndBoxes;
 import game.InputValidator;
 import puzzle.SlidingPuzzle;
-import quoridor.QuoridorGame;
 
 public class GameHub {
     private final InputValidator v;
@@ -21,7 +20,14 @@ public class GameHub {
         if (pick == 0) return;
         if (pick == 1) new SlidingPuzzle().start();
         if (pick == 2) new DotsAndBoxes().start();
-        if (pick == 3) new QuoridorGame().start();
+        if (pick == 3) {
+            System.out.println("Quoridor mode:");
+            System.out.println("1) 2 Players");
+            System.out.println("2) 4 Players");
+            int mode = v.readIntInRange("> ", 1, 2);
+            if (mode == 1) new quoridor.QuoridorGame().start();
+            else new quoridor.QuoridorGame4().start();
+        }
     }
     }
 }
